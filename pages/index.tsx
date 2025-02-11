@@ -1,35 +1,88 @@
-import { useNerveClient } from '@nerve-js/next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import Image from 'next/image';
+import Image from "next/image";
+import { Geist, Geist_Mono } from "next/font/google";
+import { useNerveClient } from "@nerve-js/next";
 
 const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 export default function Home() {
+  // Get the client instance
   const nerve = useNerveClient();
 
-  const handleFetchObservations = async () => {
+  const handleFetch = async () => {
     try {
-      await nerve.setProvider('sandbox');
+      await nerve.setProvider("sandbox");
+
+      //returns a list of patients
       const patients = await nerve.patient.search({
-        given: 'John',
-        family: 'Doe',
-        birthdate: '',
+        given: "John", //first name
+        family: "Doe", //last name
+        birthdate: "",
       });
 
-      const data = await nerve.carePlan.search({
-        patient: patients[0].id || '',
+      //Helper function to get the birthdate
+      const calculateAge = (birthDate: string): number => {
+        const today = new Date();
+        const birth = new Date(birthDate);
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+
+        // Adjust age if birthday hasn't occurred this year
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birth.getDate())
+        ) {
+          age--;
+        }
+
+        return age;
+      };
+
+      //getting birthDate with a helper function (Works) 
+      if (patients[0].birthDate) {
+        const age = calculateAge(patients[0].birthDate);
+      }
+
+      //Reason for Consultation 
+      const reasonForConsultation = await nerve.condition.search({
+        patient: patients[0].id || "",
+        //category: "reason-for-visit",
       });
-      console.log('Observations:', data);
+
+      //Medical History 
+      const medicalHistory = await nerve.condition.search({
+        category: "medical history",
+        patient: patients[0].id || "",
+      });
+
+      //Procedures Performed 
+      const procedures = await nerve.procedure.search({
+        patient: patients[1].id || "",
+        //category: "103693007", // Orders (includes any procedure ordered by a clinician and completed during an encounter)
+        //category: "9632001" // Nursing Intervention, procedures that were carried out by a nurse
+        //category: "387713003" // Surgeries (includes surgical procedures attached to a surgical log)
+      });
+
+      //Lab Analysis 
+      const labAnalysis = await nerve.observation.search({
+        category: "laboratory",
+        patient: patients[0].id || "",
+      });
+
+      // //Proposed Procedure (STU, not R4)
+      // const proposedProcedure = await nerve.procedureRequest.search({
+      //   patient: patients[0].id || "",
+      //   encounter: "",
+      // });
     } catch (error) {
-      console.error('Error fetching observations:', error);
+      console.error("Error fetching:", error);
     }
   };
 
@@ -48,7 +101,7 @@ export default function Home() {
         />
         <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2">
-            Get started by editing{' '}
+            Get started by editing{" "}
             <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
               pages/index.tsx
             </code>
