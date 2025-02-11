@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import { useNerveClient } from "@nerve-js/next";
 
@@ -36,6 +35,7 @@ export default function Home() {
       const patients = await nerve.patient.search({
         given: "John",
         family: "Doe",
+        birthdate: "",
       });
       if (!patients.length) {
         console.error("No patients found");
@@ -44,7 +44,7 @@ export default function Home() {
       const patientId = patients[0].id;
 
       const reasonForConsultation = await nerve.condition.search({
-        patient: patientId,
+        patient: patientId || "",
         category: "reason-for-visit",
       });
       console.log("Reason for Consultation:", reasonForConsultation);
@@ -59,6 +59,7 @@ export default function Home() {
       const patients = await nerve.patient.search({
         given: "John",
         family: "Doe",
+        birthdate: "",
       });
       if (!patients.length) {
         console.error("No patients found");
@@ -68,7 +69,7 @@ export default function Home() {
 
       const medicalHistory = await nerve.condition.search({
         category: "medical history",
-        patient: patientId,
+        patient: patientId || "",
       });
       console.log("Medical History:", medicalHistory);
     } catch (error) {
@@ -82,6 +83,7 @@ export default function Home() {
       const patients = await nerve.patient.search({
         given: "John",
         family: "Doe",
+        birthdate: "",
       });
       if (!patients.length) {
         console.error("No patients found");
@@ -90,7 +92,7 @@ export default function Home() {
       const patientId = patients[0].id;
 
       const procedures = await nerve.procedure.search({
-        patient: patientId,
+        patient: patientId || "",
       });
       console.log("Procedures:", procedures);
     } catch (error) {
@@ -104,6 +106,7 @@ export default function Home() {
       const patients = await nerve.patient.search({
         given: "John",
         family: "Doe",
+        birthdate: "",
       });
       if (!patients.length) {
         console.error("No patients found");
@@ -113,7 +116,7 @@ export default function Home() {
 
       const labAnalysis = await nerve.observation.search({
         category: "laboratory",
-        patient: patientId,
+        patient: patientId || "",
       });
       console.log("Lab Analysis:", labAnalysis);
     } catch (error) {
