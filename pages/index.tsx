@@ -93,6 +93,9 @@ export default function Home() {
 
       const procedures = await nerve.procedure.search({
         patient: patientId || "",
+        //category: "103693007", // Orders (includes any procedure ordered by a clinician and completed during an encounter)
+        //category: "9632001" // Nursing Intervention, procedures that were carried out by a nurse
+        //category: "387713003" // Surgeries (includes surgical procedures attached to a surgical log)
       });
       console.log("Procedures:", procedures);
     } catch (error) {
