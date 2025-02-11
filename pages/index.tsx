@@ -53,7 +53,7 @@ export default function Home() {
       //Reason for Consultation 
       const reasonForConsultation = await nerve.condition.search({
         patient: patients[0].id || "",
-        //category: "reason-for-visit",
+        category: "reason-for-visit",
       });
 
       //Medical History 
